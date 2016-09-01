@@ -6,7 +6,9 @@
   "files": [
     "src",
     "lib",
-    "dist"
+    "dist",
+    "developmentOnly.js",
+    "productionOnly.js"
   ],
   "scripts": {
     "clean": "rimraf lib",

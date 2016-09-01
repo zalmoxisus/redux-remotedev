@@ -142,6 +142,14 @@ Usually you want to send logs only for production, so you should either use it u
 import remotedev from 'redux-remotedev/productionOnly'
 ```
 
+## Exclude the enhancer from production builds
+
+If you want to receive logs only from devs, not to affect the production performance, you can use [our helper](https://github.com/zalmoxisus/redux-remotedev/blob/master/src/developmentOnly.js) to have the module stripped when `process.env.NODE_ENV === 'production'`:
+
+```js
+import remotedev from 'redux-remotedev/developmentOnly'
+```
+
 ## LICENSE
 
 [MIT](LICENSE)
