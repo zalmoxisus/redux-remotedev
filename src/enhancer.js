@@ -1,5 +1,6 @@
 import { stringify } from 'jsan';
 import catchErrors from 'remotedev-utils/lib/catchErrors';
+import { arrToRegex, isFiltered } from 'remotedev-utils/lib/filters';
 
 function sender(data, sendTo) {
   try {
@@ -57,6 +58,7 @@ function add(data, options, state) {
 }
 
 function preSend(action, store, options) {
+  if (isFiltered(action, options.filters)) return;
   let data;
   const { onlyState, withState, sendOn } = options;
   const state = store.getState();
@@ -109,6 +111,11 @@ export default function remotedevEnhancer(options) {
     options.data = [];
   }
   if (!options.withState && options.maxAge) options.states = [];
+  if (options.actionsWhitelist) {
+    options.filters = { whitelist: arrToRegex(options.actionsWhitelist) };
+  } else if (options.actionsBlacklist) {
+    options.filters = { blacklist: arrToRegex(options.actionsBlacklist) };
+  }
 
   return (createStore) => (reducer, preloadedState, enhancer) => {
     const store = createStore(reducer, preloadedState, enhancer);

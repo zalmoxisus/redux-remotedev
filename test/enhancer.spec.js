@@ -6,6 +6,7 @@ function counter(state = 0, action) {
   switch (action.type) {
     case 'INCREMENT': return state + 1;
     case 'DECREMENT': return state - 1;
+    case 'FILTERED': return state - 1;
     default: return state;
   }
 }
@@ -149,5 +150,28 @@ describe('enhancer', () => {
     expect(spy.calls[0].arguments[0].type).toBe('STATE');
     expect(spy.calls[0].arguments[0].preloadedState).toBe('1');
     expect(spy.calls[0].arguments[0].payload).toBe(undefined);
+  });
+
+  it('should filter actions', () => {
+    const options = {
+      actionsBlacklist: 'FILTERED',
+      sendOn: 'DECREMENT',
+      sender: () => {}
+    };
+    const spy = spyOn(options, 'sender');
+    const store = createStore(counter, remotedev(options));
+    expect(store.getState()).toBe(0);
+    store.dispatch({ type: 'INCREMENT' });
+    expect(store.getState()).toBe(1);
+    store.dispatch({ type: 'FILTERED' });
+    expect(store.getState()).toBe(0);
+    store.dispatch({ type: 'DECREMENT' });
+    expect(store.getState()).toBe(-1);
+    expect(spy.calls.length).toEqual(1);
+    expect(spy.calls[0].arguments[0].type).toBe('ACTIONS');
+    expect(spy.calls[0].arguments[0].payload).toBe(
+      '[{"type":"INCREMENT"},{"type":"DECREMENT"}]'
+    );
+    expect(spy.calls[0].arguments[0].preloadedState).toBe('0');
   });
 });

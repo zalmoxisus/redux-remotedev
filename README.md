@@ -113,6 +113,22 @@ In case you want to send all actions from the beginning, set `maxAge` to `Infini
 ##### `onlyState`
 *boolean* - when set to `true`, will send only the current state (as `preloadedState`) without action list. Useful when only reproducing the state without time traveling would be enough. It's recommended for gaining the performance as nothing will be stored for feature posting.
 
+##### `actionsBlacklist`
+*string or array of strings as regex* - actions types to be omitted from sending.
+
+Example:
+```js
+createStore(reducer, remotedev({
+  sendTo: 'http://localhost:8000',
+  actionsBlacklist: 'SOME_ACTION'
+  // or actionsBlacklist: ['SOME_ACTION', 'SOME_OTHER_ACTION']
+  // or just actionsBlacklist: 'SOME_' to omit both
+}))
+```
+
+##### `actionsWhitelist`
+*string or array of strings as regex* - only actions with indicated types will be sent. Use the same as in the example above. If specified, `actionsBlacklist` is ignored.
+
 ##### Info
 
 Add these optional options for better analytics: `title`, `description`, `screenshot`, `version`, `userAgent`, `user`, `meta`.
