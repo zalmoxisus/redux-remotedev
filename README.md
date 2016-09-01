@@ -110,9 +110,9 @@ In case you want to send all actions from the beginning, set `maxAge` to `Infini
 ##### `onlyState`
 *boolean* - when set to `true`, will send only the current state (as `preloadedState`) without action list. Useful when only reproducing the state without time traveling would be enough. It's recommended for gaining the performance as nothing will be stored for feature posting.
 
-##### Custom data
+##### Info
 
-Add these optional options for better analytics: `title`, `description`, `screenshot`, `version`, `user`.
+Add these optional options for better analytics: `title`, `description`, `screenshot`, `version`, `userAgent`, `user`, `meta`.
 
 Example:
 ```js
@@ -123,14 +123,17 @@ createStore(reducer, remotedev({
   description: 'It was supposed to be an useless report, but it\'s not ;)',
   screenshot: 'add here an image blob or an url of the stored screenshot',
   version: 'app version to git checkout that release tag',
+  userAgent: Platform.Version, // On React Native with: import { Platform } from 'react-native';
+  // for browsers userAgent is detected automatically, so no need to specify it explicitely.
   user: {
     id: 'user_id',
     name: 'User Name',
     email: 'user@email',
     avatar: 'url or image blob' 
-  }
+  },
   // or just a string:
-  // user: 'user id or user name to identify him'
+  // user: 'user id or user name to identify him',
+  meta: 'everything else you want to send'
 }))
 ```
 

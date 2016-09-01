@@ -17,17 +17,28 @@ function sender(data, sendTo) {
 }
 
 function prepare(data, options, action) {
+  let preloadedState = options.preloadedState;
+  if (typeof preloadedState !== 'undefined') preloadedState = stringify(options.preloadedState);
+  if (!options.userAgent) {
+    if (typeof window !== 'undefined' && window.navigator && window.navigator.userAgent) {
+      options.userAgent = window.navigator.userAgent;
+    } else {
+      options.userAgent = 'non-browser';
+    }
+  }
+
   return {
     type: options.type,
     action,
     payload: data && stringify(data),
-    preloadedState: typeof options.preloadedState !== 'undefined' ?
-      stringify(options.preloadedState) : undefined,
+    preloadedState,
     title: options.title,
     description: options.description,
     screenshot: options.screenshot,
     version: options.version,
-    user: options.user
+    userAgent: options.userAgent,
+    user: options.user,
+    meta: options.version
   };
 }
 
