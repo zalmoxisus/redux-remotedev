@@ -61,7 +61,11 @@ function preSend(action, store, options) {
   if (isFiltered(action, options.filters)) return;
   let data;
   const { onlyState, withState, sendOn } = options;
-  const state = store.getState();
+  let state = store.getState();
+
+  if (options.actionSanitizer) action = options.actionSanitizer(action);
+  if (options.stateSanitizer) state = options.stateSanitizer(state);
+
   if (onlyState) {
     options.preloadedState = state;
   } else if (withState) {

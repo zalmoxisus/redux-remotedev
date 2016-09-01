@@ -129,6 +129,31 @@ createStore(reducer, remotedev({
 ##### `actionsWhitelist`
 *string or array of strings as regex* - only actions with indicated types will be sent. Use the same as in the example above. If specified, `actionsBlacklist` is ignored.
 
+##### `actionSanitizer`
+*function* which takes the action object and returns it back. Used to sanitize sensitive data (for example credit cards numbers containing in the payload). Also it's used to strip large payloads (like image blobs) in order to make serializing faster.
+
+Example:
+```js
+createStore(reducer, remotedev({
+  sendTo: 'http://localhost:8000',
+  actionSanitizer: (action) => (
+   action.type === 'FILE_DOWNLOAD_SUCCESS' && action.data ?
+   { ...action, data: '<<LONG_BLOB>>' } : action
+  )
+}))
+````
+
+##### `stateSanitizer`
+*function* which takes the state and returns it back. As well as `actionSanitizer`, it's used to sanitize sensitive data and to strip large payloads.
+
+Example:
+```js
+createStore(reducer, remotedev({
+  sendTo: 'http://localhost:8000',
+  stateSanitizer: (state) => state.data ? { ...state, data: '<<LONG_BLOB>>' } : state
+}))
+````
+
 ##### Info
 
 Add these optional options for better analytics: `title`, `description`, `screenshot`, `version`, `userAgent`, `user`, `meta`.

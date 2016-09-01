@@ -174,4 +174,27 @@ describe('enhancer', () => {
     );
     expect(spy.calls[0].arguments[0].preloadedState).toBe('0');
   });
+
+  it('should sanitize actions', () => {
+    const options = {
+      actionSanitizer: (action) => (
+        action.type === 'INCREMENT' ? { type: 'COUNTER_INCREMENT', sanitized: true } : action
+      ),
+      sendOn: 'DECREMENT',
+      sender: () => {}
+    };
+    const spy = spyOn(options, 'sender');
+    const store = createStore(counter, remotedev(options));
+    expect(store.getState()).toBe(0);
+    store.dispatch({ type: 'INCREMENT' });
+    expect(store.getState()).toBe(1);
+    store.dispatch({ type: 'DECREMENT' });
+    expect(store.getState()).toBe(0);
+    expect(spy.calls.length).toEqual(1);
+    expect(spy.calls[0].arguments[0].type).toBe('ACTIONS');
+    expect(spy.calls[0].arguments[0].payload).toBe(
+      '[{"type":"COUNTER_INCREMENT","sanitized":true},{"type":"DECREMENT"}]'
+    );
+    expect(spy.calls[0].arguments[0].preloadedState).toBe('0');
+  });
 });
