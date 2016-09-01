@@ -21,7 +21,8 @@ function prepare(data, options, action) {
     type: options.type,
     action,
     payload: data && stringify(data),
-    preloadedState: options.preloadedState && stringify(options.preloadedState),
+    preloadedState: typeof options.preloadedState !== 'undefined' ?
+      stringify(options.preloadedState) : undefined,
     title: options.title,
     description: options.description,
     screenshot: options.screenshot,
@@ -83,6 +84,12 @@ export default function remotedevEnhancer(options) {
     const store = createStore(reducer, preloadedState, enhancer);
 
     const dispatch = (action) => {
+      if (
+        typeof options.preloadedState === 'undefined' &&
+        options.data && options.data.length === 0
+      ) {
+        options.preloadedState = store.getState();
+      }
       const r = store.dispatch(action);
       preSend(action, store, options);
       return r;

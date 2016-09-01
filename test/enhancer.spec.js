@@ -77,7 +77,7 @@ describe('enhancer', () => {
     expect(spy.calls[0].arguments[0].payload).toBe(
       '[{"type":"INCREMENT"},{"type":"INCREMENT"},{"type":"DECREMENT"}]'
     );
-    expect(spy.calls[0].arguments[0].preloadedState).toBe(undefined);
+    expect(spy.calls[0].arguments[0].preloadedState).toBe('0');
   });
 
   it('should commit state for maxAge', () => {
