@@ -56,7 +56,7 @@ function add(data, options, state) {
 
 function preSend(action, store, options) {
   let data;
-  const { onlyState, withState } = options;
+  const { onlyState, withState, sendOn } = options;
   const state = store.getState();
   if (onlyState) {
     options.preloadedState = state;
@@ -69,7 +69,10 @@ function preSend(action, store, options) {
     options.sender(prepare(data, options), options.sendTo);
   } else {
     if (!onlyState) add(data, options, state);
-    if (options.sendOn && options.sendOn === action.type) {
+    if (
+      typeof sendOn === 'string' && sendOn === action.type ||
+      typeof sendOn === 'object' && sendOn.indexOf(action.type) !== -1
+    ) {
       options.sender(prepare(options.data, options, action.type), options.sendTo);
     }
   }
