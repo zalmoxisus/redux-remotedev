@@ -1,5 +1,5 @@
 # Redux Remote DevTools for Production
-Receive logs/reports from production and get them replicated with [Redux DevTools extension](https://github.com/zalmoxisus/redux-devtools-extension) (or other [monitoring apps](https://github.com/zalmoxisus/remote-redux-devtools#monitoring)). Unlike other solutions (like [Remote Redux DevTools](https://github.com/zalmoxisus/remote-redux-devtools)), it aims to be optimized for production and suitable for different user cases (see [the options](#api)). Even though it's designed for using with [`remotedev-server`](https://github.com/zalmoxisus/remotedev-server), it can be easily integrated with any other server or serverless architectures.
+Receive logs/reports from production and get them replicated with [Redux DevTools extension](https://github.com/zalmoxisus/redux-devtools-extension) (or other [monitoring apps](https://github.com/zalmoxisus/remote-redux-devtools#monitoring)). Unlike other solutions (like [Remote Redux DevTools](https://github.com/zalmoxisus/remote-redux-devtools)), it aims to be optimized for production and suitable for different user cases (see [the options](#api)). Even though it's designed to be used together with [`remotedev-server`](https://github.com/zalmoxisus/remotedev-server), it can be easily integrated with any other server or serverless architectures.
 
 ## Installation
 
@@ -38,7 +38,7 @@ export default function configureStore(initialState) {
 }
 ```
 
-See also [`remotedev-server`](https://github.com/zalmoxisus/remotedev-server) for integrating the server part.
+See also [`remotedev-server`](https://github.com/zalmoxisus/remotedev-server/pull/20) for integrating the server part.
 
 ## API
 ### `remotedev(options)`
@@ -65,6 +65,9 @@ createStore(reducer, remotedev({
   sendOn: 'SOME_ACTION_ERROR' // or array: ['FETCH_ERROR', 'TARGETED_ACTION']
 }))
 ```
+
+##### `sendOnError`
+*boolean* - when set to `true`, will listen for all exceptions from `console.error`, `window.onerror` and `ErrorUtils` (for React Native). When an exception occurs in the app, will send a report including all the details about the exception (also as a Redux action to see the exact failed point when debugging).
 
 ##### `sender`
 *function* - custom function used to post the data. Usually, you don't need to specify it. By default `fetch` function will be used, so make sure to include [the polyfill](https://github.com/github/fetch) in case you're not targeting for React Native only and want to support older browsers.
@@ -147,7 +150,7 @@ import remotedev from 'redux-remotedev/productionOnly'
 
 ## Exclude the enhancer from production builds
 
-If you want to receive logs only from devs, not to affect the production performance, you can use [our helper](https://github.com/zalmoxisus/redux-remotedev/blob/master/src/developmentOnly.js) to have the module stripped when `process.env.NODE_ENV === 'production'`:
+If you want to receive logs only from devs, not to affect the performance in production, you can use [our helper](https://github.com/zalmoxisus/redux-remotedev/blob/master/src/developmentOnly.js) to have the module stripped when `process.env.NODE_ENV === 'production'`:
 
 ```js
 import remotedev from 'redux-remotedev/developmentOnly'

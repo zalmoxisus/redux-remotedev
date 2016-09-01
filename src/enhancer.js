@@ -1,4 +1,5 @@
 import { stringify } from 'jsan';
+import catchErrors from 'remotedev-utils/lib/catchErrors';
 
 function sender(data, sendTo) {
   try {
@@ -16,7 +17,7 @@ function sender(data, sendTo) {
   }
 }
 
-function prepare(data, options, action) {
+function prepare(data, options, action, error) {
   let preloadedState = options.preloadedState;
   if (typeof preloadedState !== 'undefined') preloadedState = stringify(options.preloadedState);
   if (!options.userAgent) {
@@ -38,7 +39,8 @@ function prepare(data, options, action) {
     version: options.version,
     userAgent: options.userAgent,
     user: options.user,
-    meta: options.version
+    meta: options.version,
+    error
   };
 }
 
@@ -78,6 +80,20 @@ function preSend(action, store, options) {
   }
 }
 
+function watchExceptions(store, options) {
+  catchErrors((errAction) => {
+    let prevAction;
+    if (options.data) {
+      prevAction = options.data[options.data.length - 1];
+      if (prevAction.action && prevAction.action.type) prevAction = prevAction.action;
+      prevAction = prevAction.type;
+    }
+
+    preSend(errAction, store, options);
+    options.sender(prepare(options.data, options, prevAction, errAction), options.sendTo);
+  });
+}
+
 export default function remotedevEnhancer(options) {
   if (!options || !options.sendTo && !options.sender) {
     throw new Error('Provide at least `sendTo` or `sender` option for remotedev enhancer.');
@@ -96,6 +112,7 @@ export default function remotedevEnhancer(options) {
 
   return (createStore) => (reducer, preloadedState, enhancer) => {
     const store = createStore(reducer, preloadedState, enhancer);
+    if (options.sendOnError) watchExceptions(store, options);
 
     const dispatch = (action) => {
       if (
