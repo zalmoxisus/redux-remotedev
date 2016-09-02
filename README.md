@@ -141,7 +141,7 @@ createStore(reducer, remotedev({
    { ...action, data: '<<LONG_BLOB>>' } : action
   )
 }))
-````
+```
 
 ##### `stateSanitizer`
 *function* which takes the state and returns it back. As well as `actionSanitizer`, it's used to sanitize sensitive data and to strip large payloads.
@@ -151,6 +151,31 @@ Example:
 createStore(reducer, remotedev({
   sendTo: 'http://localhost:8000',
   stateSanitizer: (state) => state.data ? { ...state, data: '<<LONG_BLOB>>' } : state
+}))
+```
+
+Also you can specify alternative values right in the reducer (in the state object) by adding `toJSON` function:
+
+In the example bellow it will always send `{ conter: 'sensitive' }`, regardless of the state value:
+```js
+function counter(state = { count: 0, toJSON: () => ({ conter: 'sensitive' }) }, action) {
+  switch (action.type) {
+    case 'INCREMENT': return { count: state.count + 1 };
+    default: return state;
+  }
+}
+```
+
+##### `stringifyReplacer`
+*function or array* - a function that alters the behavior of the stringification process, or an array of String and Number objects that serve as a whitelist for selecting the properties of the value object to be included in the JSON string. As a function, it takes two parameters, the key and the value being stringified. Also useful if state is not plain object.
+
+Example (for converting mori data structures):
+```js
+createStore(reducer, remotedev({
+  sendTo: 'http://localhost:8000',
+  stringifyReplacer: (key, value) => (
+    value && mori.isMap(value) ? mori.toJs(value) : value
+  )
 }))
 ````
 

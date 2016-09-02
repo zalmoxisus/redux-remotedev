@@ -20,7 +20,9 @@ function sender(data, sendTo) {
 
 function prepare(data, options, action, error) {
   let preloadedState = options.preloadedState;
-  if (typeof preloadedState !== 'undefined') preloadedState = stringify(options.preloadedState);
+  if (typeof preloadedState !== 'undefined') {
+    preloadedState = stringify(options.preloadedState, options.stringifyReplacer);
+  }
   if (!options.userAgent) {
     if (typeof window !== 'undefined' && window.navigator && window.navigator.userAgent) {
       options.userAgent = window.navigator.userAgent;
@@ -32,7 +34,7 @@ function prepare(data, options, action, error) {
   return {
     type: options.type,
     action,
-    payload: data && stringify(data),
+    payload: data && stringify(data, options.stringifyReplacer),
     preloadedState,
     title: options.title,
     description: options.description,
