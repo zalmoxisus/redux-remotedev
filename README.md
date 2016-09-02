@@ -97,6 +97,18 @@ createStore(reducer, remotedev({
 }))
 ```
 
+##### `beforeSending`
+*function(report, sender)* - called before attempting to send a report, so you can show a dialog and append some data to the `report` object.
+
+```js
+createStore(reducer, remotedev({
+  sendTo: 'http://localhost:8000',
+  beforeSending(report, send) {
+    send({ ...report, title: prompt('Please describe what happened') });
+  }
+}))
+```
+
 ##### `sender`
 *function* - custom function used to post the data. Usually, you don't need to specify it. By default `fetch` function will be used, so make sure to include [the polyfill](https://github.com/github/fetch) in case you're not targeting for React Native only and want to support older browsers.
 

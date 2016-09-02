@@ -7,6 +7,9 @@ export default function configureStore(initialState) {
     sendTo: 'http://localhost:8000',
     sendOn: 'COMPLETE_TODO',
     sendOnError: true,
+    beforeSending(report, send) {
+      send({ ...report, title: prompt('Please describe what happened') });
+    },
     sendingStatus: {
       started(report) {
         console.log('Sending a report', report);

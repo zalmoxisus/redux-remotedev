@@ -31,6 +31,16 @@ function sender(data, sendTo, status) {
   }
 }
 
+function send(data, options) {
+  if (!options.beforeSending) {
+    options.sender(data, options.sendTo, options.sendingStatus);
+  } else {
+    options.beforeSending(data, (aData) => {
+      options.sender(aData || data, options.sendTo, options.sendingStatus);
+    });
+  }
+}
+
 function prepare(data, options, action, error) {
   let preloadedState = options.preloadedState;
   if (typeof preloadedState !== 'undefined') {
@@ -90,17 +100,14 @@ function preSend(action, store, options) {
     data = action;
   }
   if (options.every) {
-    options.sender(prepare(data, options), options.sendTo, options.sendingStatus);
+    send(prepare(data, options), options);
   } else {
     if (!onlyState) add(data, options, state);
     if (
       typeof sendOn === 'string' && sendOn === action.type ||
       typeof sendOn === 'object' && sendOn.indexOf(action.type) !== -1
     ) {
-      options.sender(
-        prepare(options.data, options, action.type),
-        options.sendTo, options.sendingStatus
-      );
+      send(prepare(options.data, options, action.type), options);
     }
   }
 }
@@ -115,10 +122,7 @@ function watchExceptions(store, options) {
     }
 
     preSend(errAction, store, options);
-    options.sender(
-      prepare(options.data, options, prevAction, errAction),
-      options.sendTo, options.sendingStatus
-    );
+    send(prepare(options.data, options, prevAction, errAction), options);
   });
 }
 
