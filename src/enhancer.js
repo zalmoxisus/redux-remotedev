@@ -118,8 +118,10 @@ function watchExceptions(store, options) {
     let prevAction;
     if (options.data) {
       prevAction = options.data[options.data.length - 1];
-      if (prevAction.action && prevAction.action.type) prevAction = prevAction.action;
-      prevAction = prevAction.type;
+      if (prevAction) {
+        if (prevAction.action && prevAction.action.type) prevAction = prevAction.action;
+        prevAction = prevAction.type;
+      }
     }
 
     preSend(errAction, store, options);
