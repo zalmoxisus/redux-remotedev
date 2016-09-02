@@ -166,6 +166,32 @@ function counter(state = { count: 0, toJSON: () => ({ conter: 'sensitive' }) }, 
 }
 ```
 
+You could also alter the value. In the example below when state is `{ count: 1 }`, we'll send `{ counter: 10 }` (notice we don't have an arrow function this time to use the object's `this`):  
+```js
+function counter(
+  state = { count: 0, toJSON: function (){ return { conter: this.count * 10 }; } },
+  action
+) {
+  // ...
+}
+```
+
+In case you want to sanitize only specific values, use:
+```js
+function reducer(
+  state = {
+    v1: 1, v2: 2, v3: 3, v4: 4,
+    toJSON: function (){
+      return { ...this, v2: 'sanitized', v4: 'sanitized' };
+      // Or return Object.assign({}, this, { v2: 'sanitized', v4: 'sanitized' })
+    }
+  },
+  action
+) {
+  // ...
+}
+```
+
 ##### `stringifyReplacer`
 *function or array* - a function that alters the behavior of the stringification process, or an array of String and Number objects that serve as a whitelist for selecting the properties of the value object to be included in the JSON string. As a function, it takes two parameters, the key and the value being stringified. Also useful if state is not plain object.
 
