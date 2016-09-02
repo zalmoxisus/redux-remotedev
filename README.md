@@ -167,6 +167,7 @@ createStore(reducer, remotedev({
   description: 'It was supposed to be an useless report, but it\'s not ;)',
   screenshot: 'add here an image blob or an url of the stored screenshot',
   version: 'app version to git checkout that release tag',
+  appId: 'id to identify the application',
   userAgent: Platform.Version, // On React Native with: import { Platform } from 'react-native';
   // for browsers userAgent is detected automatically, so no need to specify it explicitely.
   user: {

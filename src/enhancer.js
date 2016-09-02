@@ -38,6 +38,7 @@ function prepare(data, options, action, error) {
     description: options.description,
     screenshot: options.screenshot,
     version: options.version,
+    appId: options.appId,
     userAgent: options.userAgent,
     user: options.user,
     meta: options.version,
