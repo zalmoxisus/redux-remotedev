@@ -280,7 +280,7 @@ createStore(reducer, remotedev({
     id: 'user_id',
     name: 'User Name',
     email: 'user@email',
-    avatar: 'url or image blob' 
+    photo: 'url or image blob' 
   },
   // or just a string:
   // user: 'user id or user name to identify him',
