@@ -109,6 +109,21 @@ createStore(reducer, remotedev({
 }))
 ```
 
+##### `headers`
+*object* - custom headers to inject into the sending request additionally to `{ 'content-type': 'application/json' }` (which can be overwritten).
+
+Example:
+```js
+createStore(reducer, remotedev({
+  sendTo: 'http://localhost:8000',
+  headers: {
+    'content-type': 'application/javascript', // to use JSON-P instead
+    'grant_type': 'client_credentials', // some systems may require credentials
+    'client123': 'secret123' // custom header `'<Client-Id>': '<Secret>'`
+  }
+}))
+````
+
 ##### `sender`
 *function* - custom function used to post the data. Usually, you don't need to specify it. By default `fetch` function will be used, so make sure to include [the polyfill](https://github.com/github/fetch) in case you're not targeting for React Native only and want to support older browsers.
 

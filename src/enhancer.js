@@ -2,13 +2,14 @@ import { stringify } from 'jsan';
 import catchErrors from 'remotedev-utils/lib/catchErrors';
 import { arrToRegex, isFiltered } from 'remotedev-utils/lib/filters';
 
-function sender(data, sendTo, status) {
+function sender(data, sendTo, headers, status) {
   if (status && status.started) status.started(data);
   try {
     const f = fetch(sendTo, {
       method: 'POST',
       headers: {
-        'content-type': 'application/json'
+        'content-type': 'application/json',
+        ...headers
       },
       body: JSON.stringify(data)
     });
@@ -33,10 +34,10 @@ function sender(data, sendTo, status) {
 
 function send(data, options) {
   if (!options.beforeSending) {
-    options.sender(data, options.sendTo, options.sendingStatus);
+    options.sender(data, options.sendTo, options.headers, options.sendingStatus);
   } else {
     options.beforeSending(data, (aData) => {
-      options.sender(aData || data, options.sendTo, options.sendingStatus);
+      options.sender(aData || data, options.sendTo, options.headers, options.sendingStatus);
     });
   }
 }
