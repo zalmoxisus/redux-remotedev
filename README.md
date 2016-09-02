@@ -69,6 +69,34 @@ createStore(reducer, remotedev({
 ##### `sendOnError`
 *boolean* - when set to `true`, will listen for all exceptions from `console.error`, `window.onerror` and `ErrorUtils` (for React Native). When an exception occurs in the app, will send a report including all the details about the exception (also as a Redux action to see the exact failed point when debugging).
 
+##### `sendingStatus`
+*object of functions*
+- `started(report)`: called when attempts to send a report. The report object is passed to the function. You can use it to show a loading indicator for your report dialog. 
+- `done(reportId)`: called when server returned a success response. The stored report id is passed, so you can generate an url like `http://hostname/?remotedev_report=${id}` (where hostname can be your development or production domain) to replicate the reported issue. When opening this url on a site with the extension included, the exact history state will be applied to your Redux store.  
+- `failed(error)`: called when server returned an error response or when `fetch` failed. The error message is passed.
+
+Example:
+```js
+createStore(reducer, remotedev({
+  sendTo: 'http://localhost:8000',
+  sendingStatus: {
+    started(report) {
+      console.log('Sending a report', report);
+    },
+    done(reportId) {
+      console.info(
+        'The report sent. ' +
+        'Open this url to replicate: ' +
+        'http://localhost:3000/?remotedev_report=' + reportId
+       );
+    },
+    failed(error) {
+      console.warn('Report cannot be sent.', error);
+    }
+  }
+}))
+```
+
 ##### `sender`
 *function* - custom function used to post the data. Usually, you don't need to specify it. By default `fetch` function will be used, so make sure to include [the polyfill](https://github.com/github/fetch) in case you're not targeting for React Native only and want to support older browsers.
 

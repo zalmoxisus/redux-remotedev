@@ -2,18 +2,31 @@ import { stringify } from 'jsan';
 import catchErrors from 'remotedev-utils/lib/catchErrors';
 import { arrToRegex, isFiltered } from 'remotedev-utils/lib/filters';
 
-function sender(data, sendTo) {
+function sender(data, sendTo, status) {
+  if (status && status.started) status.started(data);
   try {
-    fetch(sendTo, {
+    const f = fetch(sendTo, {
       method: 'POST',
       headers: {
         'content-type': 'application/json'
       },
       body: JSON.stringify(data)
-    }).catch(function (err) {
-      console.warn(err);
     });
+    if (status && (status.done || status.failed)) {
+      f.then((response) => (
+        response.json()
+      )).then((r) => {
+        if (r && r.id) {
+          if (status.done) status.done(r.id);
+        } else {
+          if (status.failed) status.failed(r.error);
+        }
+      }).catch((err) => {
+        if (status && status.failed) status.failed(err.message || err);
+      });
+    }
   } catch (err) {
+    if (status && status.failed) status.failed(err.message || err);
     console.warn(err);
   }
 }
@@ -36,7 +49,7 @@ function prepare(data, options, action, error) {
     action,
     payload: data && stringify(data, options.stringifyReplacer),
     preloadedState,
-    title: options.title,
+    title: options.title ? options.title : undefined,
     description: options.description,
     screenshot: options.screenshot,
     version: options.version,
@@ -77,14 +90,17 @@ function preSend(action, store, options) {
     data = action;
   }
   if (options.every) {
-    options.sender(prepare(data, options), options.sendTo);
+    options.sender(prepare(data, options), options.sendTo, options.sendingStatus);
   } else {
     if (!onlyState) add(data, options, state);
     if (
       typeof sendOn === 'string' && sendOn === action.type ||
       typeof sendOn === 'object' && sendOn.indexOf(action.type) !== -1
     ) {
-      options.sender(prepare(options.data, options, action.type), options.sendTo);
+      options.sender(
+        prepare(options.data, options, action.type),
+        options.sendTo, options.sendingStatus
+      );
     }
   }
 }
@@ -99,7 +115,10 @@ function watchExceptions(store, options) {
     }
 
     preSend(errAction, store, options);
-    options.sender(prepare(options.data, options, prevAction, errAction), options.sendTo);
+    options.sender(
+      prepare(options.data, options, prevAction, errAction),
+      options.sendTo, options.sendingStatus
+    );
   });
 }
 
