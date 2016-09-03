@@ -2,6 +2,70 @@
 <html>
   <head>
     <title>Redux TodoMVC example</title>
+    <link href="https://unpkg.com/react-redux-toastr@3.7.0/lib/css/react-redux-toastr.css" rel="stylesheet" type="text/css">
+    <style>
+      .report {
+        padding: 0;
+        margin: 0;
+        width: 100%;
+        border-top: 1px solid #f0f0f0;
+        text-align: center;
+        overflow: hidden;
+        background-color: #fcfcfc;
+      }
+      .reportMsg {
+        width: 100%;
+        padding: 10px;
+        font-size: 17px;
+      }
+      .report button {
+        width: 50%;
+        height: 50px;
+        text-transform: capitalize;
+        background-color: transparent;
+        padding: 0;
+        margin: 0;
+        position: relative;
+        z-index: 1;
+        float: left;
+        font-size: 14px;
+        overflow: hidden;
+        border: 1px solid #f0f0f0;
+      }
+      .report button p {
+        position: relative;
+        z-index: 1;
+        line-height: 100%;
+        padding: 0;
+        margin: 0;
+        color: #555;
+      }
+      button:before {
+        content: '';
+        width: 40px;
+        height: 40px;
+        position: absolute;
+        top: 0;
+        left: 50%;
+        margin-left: -20px;
+        background-color: #999;
+        border-radius: 50%;
+        z-index: 0;
+        opacity: .2;
+        transform: scale(0);
+      }
+      .report button.active:before {
+        transition: transform 0.25s ease-in-out;
+        transform: scale(2);
+      }
+      .report button:focus {
+        outline: none;
+      }
+      .report button:hover {
+        cursor: pointer;
+        background-color: #f5f5f5;
+      }
+    </style>
   </head>
   <body>
     <div class="todoapp" id="root">
