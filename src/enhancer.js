@@ -38,7 +38,7 @@ function send(data, options) {
   } else {
     options.beforeSending(data, (aData) => {
       options.sender(aData || data, options.sendTo, options.headers, options.sendingStatus);
-    });
+    }, options);
   }
 }
 
@@ -104,7 +104,16 @@ function preSend(action, store, options) {
     send(prepare(data, options), options);
   } else {
     if (!onlyState) add(data, options, state);
+    let shouldSend = false;
     if (
+      options.sendOnCondition &&
+      !options.sentOnCondition && options.sendOnCondition(state, action)
+    ) {
+      shouldSend = true;
+      options.sentOnCondition = true;
+    }
+    if (
+      shouldSend ||
       typeof sendOn === 'string' && sendOn === action.type ||
       typeof sendOn === 'object' && sendOn.indexOf(action.type) !== -1
     ) {

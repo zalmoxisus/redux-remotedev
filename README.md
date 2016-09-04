@@ -1,5 +1,5 @@
 # Redux Remote DevTools for Production
-Receive logs/reports from production and get them replicated with [Redux DevTools extension](https://github.com/zalmoxisus/redux-devtools-extension) (or other [monitoring apps](https://github.com/zalmoxisus/remote-redux-devtools#monitoring)). Unlike other solutions (like [Remote Redux DevTools](https://github.com/zalmoxisus/remote-redux-devtools)), it aims to be optimized for production and suitable for different user cases (see [the options](#api)). Even though it's designed to be used together with [`remotedev-server`](https://github.com/zalmoxisus/remotedev-server), it can be easily integrated with any other server or serverless architectures.
+Receive logs/reports from production and get them replicated with [Redux DevTools extension](https://github.com/zalmoxisus/redux-devtools-extension) (or other [monitoring apps](https://github.com/zalmoxisus/remote-redux-devtools#monitoring)). Unlike other solutions (like [Remote Redux DevTools](https://github.com/zalmoxisus/remote-redux-devtools)), it aims to be optimized for production and suitable for different use cases (see [the options](#api)). Even though it's designed to be used together with [`remotedev-server`](https://github.com/zalmoxisus/remotedev-server), it can be easily integrated with any other server or serverless architectures.
 
 ## Installation
 
@@ -66,6 +66,20 @@ createStore(reducer, remotedev({
 }))
 ```
 
+##### `sendOnCondition`
+*function (state, action)* - when returns `true` (the condition is satisfied), the report will be sent. Unlike `sendOn`, here you can check not only the action type, but the whole action object and also the state object. Another difference is that by default the report will be sent only first time the condition is satisfied. If you want to send it multiple times, set `options.sentOnCondition` to `false` in `beforeSending` function.
+
+Example:
+```js
+createStore(reducer, remotedev({
+  sendTo: 'http://localhost:8000',
+  sendOnCondition: (action, state) => state.counter.count === 5,
+  // sendOnCondition: (action, state) => state.user.id !== undefined,
+  // sendOnCondition: (action, state) => action.user.id !== undefined,
+  // sendOnCondition: (action, state) => action.type === 'SOME_ACTION'
+}))
+```
+
 ##### `sendOnError`
 *boolean* - when set to `true`, will listen for all exceptions from `console.error`, `window.onerror` and `ErrorUtils` (for React Native). When an exception occurs in the app, will send a report including all the details about the exception (also as a Redux action to see the exact failed point when debugging).
 
@@ -98,7 +112,7 @@ createStore(reducer, remotedev({
 ```
 
 ##### `beforeSending`
-*function(report, sender)* - called before attempting to send a report, so you can show a dialog and append some data to the `report` object.
+*function(report, sender, options)* - called before attempting to send a report, so you can show a dialog and append some data to the `report` object.
 
 ```js
 createStore(reducer, remotedev({

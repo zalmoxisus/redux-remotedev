@@ -79,6 +79,37 @@ describe('enhancer', () => {
       '[{"type":"INCREMENT"},{"type":"INCREMENT"},{"type":"DECREMENT"}]'
     );
     expect(spy.calls[0].arguments[0].preloadedState).toBe('0');
+    store.dispatch({ type: 'DECREMENT' });
+    expect(store.getState()).toBe(0);
+    expect(spy.calls.length).toEqual(2);
+  });
+
+  it('should send for `sendOnCondition`', () => {
+    const options = {
+      sendOnCondition: (state, action) => action.type === 'DECREMENT',
+      sender: () => {}
+    };
+    const spy = spyOn(options, 'sender');
+    const store = createStore(counter, remotedev(options));
+    expect(spy.calls.length).toEqual(0);
+    expect(store.getState()).toBe(0);
+    store.dispatch({ type: 'INCREMENT' });
+    expect(store.getState()).toBe(1);
+    expect(spy.calls.length).toEqual(0);
+    store.dispatch({ type: 'INCREMENT' });
+    expect(store.getState()).toBe(2);
+    expect(spy.calls.length).toEqual(0);
+    store.dispatch({ type: 'DECREMENT' });
+    expect(store.getState()).toBe(1);
+    expect(spy.calls.length).toEqual(1);
+    expect(spy.calls[0].arguments[0].type).toBe('ACTIONS');
+    expect(spy.calls[0].arguments[0].payload).toBe(
+      '[{"type":"INCREMENT"},{"type":"INCREMENT"},{"type":"DECREMENT"}]'
+    );
+    expect(spy.calls[0].arguments[0].preloadedState).toBe('0');
+    store.dispatch({ type: 'DECREMENT' });
+    expect(store.getState()).toBe(0);
+    expect(spy.calls.length).toEqual(1);
   });
 
   it('should commit state for maxAge', () => {
