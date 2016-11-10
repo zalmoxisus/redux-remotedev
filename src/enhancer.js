@@ -42,7 +42,7 @@ function send(data, options) {
   }
 }
 
-function prepare(data, options, action, error) {
+function prepare(data, options, action, exception) {
   let preloadedState = options.preloadedState;
   if (typeof preloadedState !== 'undefined') {
     preloadedState = stringify(options.preloadedState, options.stringifyReplacer);
@@ -68,7 +68,7 @@ function prepare(data, options, action, error) {
     userAgent: options.userAgent,
     user: options.user,
     meta: options.version,
-    error
+    exception
   };
 }
 
