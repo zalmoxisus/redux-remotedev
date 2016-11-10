@@ -66,6 +66,7 @@ function prepare(data, options, action, exception) {
     screenshot: options.screenshot,
     version: options.version,
     appId: options.appId,
+    instanceId: options.instanceId,
     userAgent: options.userAgent,
     user: options.user,
     meta: options.version,
