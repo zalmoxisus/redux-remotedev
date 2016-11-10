@@ -11,6 +11,7 @@ function sender(data, sendTo, headers, status, store) {
         'content-type': 'application/json',
         ...headers
       },
+      credentials: 'same-origin',
       body: JSON.stringify(data)
     });
     if (status && (status.done || status.failed)) {
