@@ -34,6 +34,7 @@ describe('enhancer', () => {
     expect(spy.calls.length).toEqual(1);
     expect(spy.calls[0].arguments[0].type).toBe('ACTION');
     expect(spy.calls[0].arguments[0].payload).toBe('{"type":"INCREMENT"}');
+    expect(spy.calls[0].arguments[4].getState()).toBe(1);
     store.dispatch({ type: 'INCREMENT' });
     expect(store.getState()).toBe(2);
     expect(spy.calls.length).toEqual(2);

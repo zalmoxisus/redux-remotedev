@@ -2,8 +2,8 @@ import { stringify } from 'jsan';
 import catchErrors from 'remotedev-utils/lib/catchErrors';
 import { arrToRegex, isFiltered } from 'remotedev-utils/lib/filters';
 
-function sender(data, sendTo, headers, status) {
-  if (status && status.started) status.started(data);
+function sender(data, sendTo, headers, status, store) {
+  if (status && status.started) status.started(data, store);
   try {
     const f = fetch(sendTo, {
       method: 'POST',
@@ -18,26 +18,26 @@ function sender(data, sendTo, headers, status) {
         response.json()
       )).then((r) => {
         if (r && r.id) {
-          if (status.done) status.done(r.id);
+          if (status.done) status.done(r.id, store);
         } else {
-          if (status.failed) status.failed(r.error);
+          if (status.failed) status.failed(r.error, store);
         }
       }).catch((err) => {
-        if (status && status.failed) status.failed(err.message || err);
+        if (status && status.failed) status.failed(err.message || err, store);
       });
     }
   } catch (err) {
-    if (status && status.failed) status.failed(err.message || err);
+    if (status && status.failed) status.failed(err.message || err, store);
     console.warn(err);
   }
 }
 
-function send(data, options) {
+function send(data, options, store) {
   if (!options.beforeSending) {
-    options.sender(data, options.sendTo, options.headers, options.sendingStatus);
+    options.sender(data, options.sendTo, options.headers, options.sendingStatus, store);
   } else {
     options.beforeSending(data, (aData) => {
-      options.sender(aData || data, options.sendTo, options.headers, options.sendingStatus);
+      options.sender(aData || data, options.sendTo, options.headers, options.sendingStatus, store);
     }, options);
   }
 }
@@ -101,7 +101,7 @@ function preSend(action, store, options) {
     data = action;
   }
   if (options.every) {
-    send(prepare(data, options), options);
+    send(prepare(data, options), options, store);
   } else {
     if (!onlyState) add(data, options, state);
     let shouldSend = false;
@@ -117,7 +117,7 @@ function preSend(action, store, options) {
       typeof sendOn === 'string' && sendOn === action.type ||
       typeof sendOn === 'object' && sendOn.indexOf(action.type) !== -1
     ) {
-      send(prepare(options.data, options, action.type), options);
+      send(prepare(options.data, options, action.type), options, store);
     }
   }
 }
@@ -134,7 +134,7 @@ function watchExceptions(store, options) {
     }
 
     preSend(errAction, store, options);
-    send(prepare(options.data, options, prevAction, errAction), options);
+    send(prepare(options.data, options, prevAction, errAction), options, store);
   });
 }
 

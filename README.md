@@ -85,9 +85,9 @@ createStore(reducer, remotedev({
 
 ##### `sendingStatus`
 *object of functions*
-- `started(report)`: called when attempts to send a report. The report object is passed to the function. You can use it to show a loading indicator for your report dialog. 
-- `done(reportId)`: called when server returned a success response. The stored report id is passed, so you can generate an url like `http://hostname/?remotedev_report=${id}` (where hostname can be your development or production domain) to replicate the reported issue. When opening this url on a site with the extension included, the exact history state will be applied to your Redux store.  
-- `failed(error)`: called when server returned an error response or when `fetch` failed. The error message is passed.
+- `started(report, store)`: called when attempts to send a report. The report object is passed to the function. You can use it to show a loading indicator for your report dialog. 
+- `done(reportId, store)`: called when server returned a success response. The stored report id is passed, so you can generate an url like `http://hostname/?remotedev_report=${id}` (where hostname can be your development or production domain) to replicate the reported issue. When opening this url on a site with the extension included, the exact history state will be applied to your Redux store.  
+- `failed(error, store)`: called when server returned an error response or when `fetch` failed. The error message is passed.
 
 Example:
 ```js
@@ -104,8 +104,9 @@ createStore(reducer, remotedev({
         'http://localhost:3000/?remotedev_report=' + reportId
        );
     },
-    failed(error) {
+    failed(error, store) {
       console.warn('Report cannot be sent.', error);
+      // store.dispatch({ type: 'REPORT_FAILED` });
     }
   }
 }))
@@ -139,7 +140,7 @@ createStore(reducer, remotedev({
 ````
 
 ##### `sender`
-*function* - custom function used to post the data. Usually, you don't need to specify it. By default `fetch` function will be used, so make sure to include [the polyfill](https://github.com/github/fetch) in case you're not targeting for React Native only and want to support older browsers.
+*function* - custom function used to post the data. Usually, you don't need to specify it. By default `fetch` function will be used, so make sure to include [the polyfill](https://github.com/github/fetch) in case you're not targeting for React Native only and want to support older browsers (add `import 'isomorphic-fetch'` in the consuming code).
 
 Example:
 ```js
