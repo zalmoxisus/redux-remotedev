@@ -1,6 +1,6 @@
 {
   "name": "redux-remotedev",
-  "version": "0.1.0",
+  "version": "0.3.0",
   "description": "Redux DevTools for production.",
   "main": "lib/index.js",
   "files": [
