@@ -7,12 +7,19 @@ Receive logs/reports from production and get them replicated with [Redux DevTool
 npm install --save redux-remotedev
 ```
 
+Optionally, install [isomorphic fetch polyfill](https://github.com/matthew-andrews/isomorphic-fetch) for Node and [unsupported browsers](https://developer.mozilla.org/en-US/docs/Web/API/Fetch_API):
+
+```
+npm install --save isomorphic-fetch es6-promise
+```
+
 ## Usage
 
 Just add the store enhancer to your Redux store:
 
 ```js
 import remotedev from 'redux-remotedev';
+import 'isomorphic-fetch'; // include in the main script once
 createStore(reducer, remotedev({ sendTo: 'http://localhost:8000' }));
 ```
 
@@ -22,6 +29,7 @@ More detailed example:
 import { createStore, applyMiddleware, compose } from 'redux';
 // import thunk from 'redux-thunk';
 import remotedev from 'redux-remotedev';
+import 'isomorphic-fetch';
 import reducer from '../reducers';
 
 export default function configureStore(initialState) {
@@ -140,7 +148,7 @@ createStore(reducer, remotedev({
 ````
 
 ##### `sender`
-*function* - custom function used to post the data. Usually, you don't need to specify it. By default `fetch` function will be used, so make sure to include [the polyfill](https://github.com/github/fetch) in case you're not targeting for React Native only and want to support older browsers (add `import 'isomorphic-fetch'` in the consuming code).
+*function* - custom function used to post the data. Usually, you don't need to specify it. By default `fetch` function will be used, so make sure to include [the polyfill](https://github.com/github/fetch) in case you're not targeting for React Native only and want to support all browsers (add `import 'isomorphic-fetch'` in the consuming code).
 
 Example:
 ```js
