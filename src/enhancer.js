@@ -46,7 +46,7 @@ function send(data, options, store) {
 function prepare(data, options, action, exception) {
   let preloadedState = options.preloadedState;
   if (typeof preloadedState !== 'undefined') {
-    preloadedState = stringify(options.preloadedState, options.stringifyReplacer);
+    preloadedState = stringify(options.preloadedState, options.stringifyReplacer, null, true);
   }
   if (!options.userAgent) {
     if (typeof window !== 'undefined' && window.navigator && window.navigator.userAgent) {
