@@ -108,11 +108,9 @@ function preSend(action, store, options) {
     if (!onlyState) add(data, options, state);
     let shouldSend = false;
     if (
-      options.sendOnCondition &&
-      !options.sentOnCondition && options.sendOnCondition(state, action)
+      options.sendOnCondition && options.sendOnCondition(state, action)
     ) {
       shouldSend = true;
-      options.sentOnCondition = true;
     }
     if (
       shouldSend ||
